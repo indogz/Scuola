@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">DewDrop</string>
+    <string name="user">Username:</string>
+    <string name="passw">Password:</string>
+    <string name="signin">Sign In</string>
+    <string name="signup">Sign Up</string>
+    <string name="forgotten">Have you forgotten your password?</string>
+    <string name="googleLabel"> Or use your Google Account</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
