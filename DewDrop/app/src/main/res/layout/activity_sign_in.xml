@@ -1,136 +1,168 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.volcano.dewdrop.SignInActivity">
 
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:id="@+id/passwordLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/passw"
+        app:layout_constraintBaseline_toBaselineOf="@+id/passwordBox"
+        app:layout_constraintRight_toLeftOf="@+id/passwordBox"
+        tools:layout_constraintBaseline_creator="1"
+        tools:layout_constraintRight_creator="1"
+        android:layout_alignBaseline="@+id/passwordBox"
+        android:layout_alignBottom="@+id/passwordBox"
+        android:layout_alignStart="@+id/userLabel" />
+
     <EditText
         android:id="@+id/usernameBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="27dp"
+        android:layout_weight="1"
         android:ems="10"
         android:inputType="text"
-        tools:ignore="MissingConstraints"
-        tools:layout_constraintTop_creator="1"
-        android:layout_marginStart="7dp"
-        android:layout_marginTop="127dp"
-        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toRightOf="@+id/userLabel"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toRightOf="@+id/userLabel" />
-
-    <EditText
-        android:id="@+id/passwordBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPassword"
         tools:ignore="MissingConstraints"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        app:layout_constraintRight_toRightOf="@+id/usernameBox"
-        android:layout_marginTop="38dp"
-        app:layout_constraintTop_toBottomOf="@+id/usernameBox"
         tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="@+id/usernameBox" />
+        tools:layout_constraintTop_creator="1"
+        android:layout_below="@+id/fragment_container"
+        android:layout_alignStart="@+id/googleLabel" />
 
     <Button
         android:id="@+id/signinButton"
         style="@android:style/Widget.Material.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:text="@string/signin"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
         app:layout_constraintBottom_toTopOf="@+id/googleLabel"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintBottom_creator="1"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="15dp"
-        app:layout_constraintLeft_toLeftOf="parent" />
-
-    <TextView
-        android:id="@+id/userLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/user"
-        android:layout_marginStart="30dp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/usernameBox"
-        tools:layout_constraintBaseline_creator="1"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent" />
-
-    <TextView
-        android:id="@+id/passwordLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/passw"
-        app:layout_constraintRight_toLeftOf="@+id/passwordBox"
         tools:layout_constraintRight_creator="1"
-        android:layout_marginEnd="9dp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/passwordBox"
-        tools:layout_constraintBaseline_creator="1" />
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/passwordBox"
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:id="@+id/signupLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:text="@string/signup"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
         app:layout_constraintBottom_toTopOf="@+id/forgottenLabel"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintBottom_creator="1"
         tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"
         android:layout_marginBottom="12dp"
-        app:layout_constraintLeft_toLeftOf="parent" />
-
-    <TextView
-        android:id="@+id/forgottenLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/forgotten"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="40dp"
-        app:layout_constraintLeft_toLeftOf="parent" />
-
-    <TextView
-        android:id="@+id/googleLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/googleLabel"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="@+id/forgottenLabel"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="109dp"
-        app:layout_constraintTop_toBottomOf="@+id/passwordLabel"
-        tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="109dp"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        android:layout_above="@+id/forgottenLabel"
+        android:layout_alignStart="@+id/googleAuth" />
 
     <ImageButton
         android:id="@+id/googleAuth"
         style="@android:style/Widget.Material.Light.ImageButton"
         android:layout_width="43dp"
         android:layout_height="43dp"
+        android:layout_weight="1"
         android:adjustViewBounds="true"
         android:cropToPadding="false"
         android:elevation="@dimen/defaultButto"
-        app:srcCompat="@mipmap/ic_launcher"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="@+id/signupLabel"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="24dp"
-        tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toBottomOf="@+id/googleLabel"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/googleLabel" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:srcCompat="@mipmap/ic_launcher"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1"
+        android:layout_above="@+id/signupLabel"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="11dp" />
 
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:id="@+id/forgottenLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/forgotten"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/passwordLabel"
+        android:layout_marginBottom="20dp" />
+
+    <TextView
+        android:id="@+id/googleLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/googleLabel"
+        app:layout_constraintBottom_toBottomOf="@+id/forgottenLabel"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwordLabel"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1"
+        android:layout_below="@+id/signinButton"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/userLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/user"
+        app:layout_constraintBaseline_toBaselineOf="@+id/usernameBox"
+        app:layout_constraintLeft_toLeftOf="parent"
+        tools:layout_constraintBaseline_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        android:layout_alignBaseline="@+id/usernameBox"
+        android:layout_alignBottom="@+id/usernameBox"
+        android:layout_toStartOf="@+id/usernameBox"
+        android:layout_marginEnd="10dp" />
+
+    <EditText
+        android:id="@+id/passwordBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:layout_weight="1"
+        android:ems="10"
+        android:inputType="textPassword"
+        app:layout_constraintLeft_toLeftOf="@+id/usernameBox"
+        app:layout_constraintRight_toRightOf="@+id/usernameBox"
+        app:layout_constraintTop_toBottomOf="@+id/usernameBox"
+        tools:ignore="MissingConstraints"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1"
+        android:layout_below="@+id/usernameBox"
+        android:layout_alignStart="@+id/usernameBox" />
+
+
+</RelativeLayout>
