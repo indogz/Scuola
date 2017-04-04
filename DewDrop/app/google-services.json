@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "327268633017",
+    "firebase_url": "https://maturita-88abb.firebaseio.com",
+    "project_id": "maturita-88abb",
+    "storage_bucket": "maturita-88abb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:327268633017:android:d7c8e87fc659c438",
+        "android_client_info": {
+          "package_name": "com.example.volcano.dewdrop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "327268633017-l3dk9u7jhjfi55g5o4d3s1t5a09tm9pf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.volcano.dewdrop",
+            "certificate_hash": "b0d45f4b8ac59197f70edad2a17b7ac11ebfa542"
+          }
+        },
+        {
+          "client_id": "327268633017-3oq7nk9tlc3p18m7m6orvj1nrdn9mht4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuqmoHIFCwfzNzmNsZyzpCRgzOj5FVSxI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "327268633017-3oq7nk9tlc3p18m7m6orvj1nrdn9mht4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
