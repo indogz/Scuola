@@ -46,13 +46,12 @@ public class Authenticator {
                 .addOnCompleteListener(boundActivity, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+                        Toast.makeText(boundActivity,"onAuthStateChanged:onComplete",Toast.LENGTH_LONG);
 
                         /*If sign in fails, display a message to the user. If sign in succeeds
                          the auth state listener will be notified and logic to handle the
                          signed in user can be handled in the listener.*/
                         if (!task.isSuccessful()) {
-                            Log.w(TAG, "signInWithEmail:failed", task.getException());
                             Toast.makeText(boundActivity, "OK",
                                     Toast.LENGTH_SHORT).show();
                         }
@@ -106,10 +105,10 @@ public class Authenticator {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    Toast.makeText(boundActivity,"onAuthStateChanged:signed_in:" + user.getUid(),Toast.LENGTH_LONG);
                 } else {
                     // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                    Toast.makeText(boundActivity,"onAuthStateChanged:signed_out:" + user.getUid(),Toast.LENGTH_LONG);
                 }
                 // ...
             }
