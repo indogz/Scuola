@@ -46,7 +46,7 @@ public class Authenticator {
                 .addOnCompleteListener(boundActivity, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Toast.makeText(boundActivity,"onAuthStateChanged:onComplete",Toast.LENGTH_LONG);
+                        Toast.makeText(boundActivity, "onAuthStateChanged:onComplete", Toast.LENGTH_LONG).show();
 
                         /*If sign in fails, display a message to the user. If sign in succeeds
                          the auth state listener will be notified and logic to handle the
@@ -67,18 +67,19 @@ public class Authenticator {
                 .requestEmail()
                 .build();
 
-
+Toast.makeText(boundActivity.getApplicationContext(),"GSO",Toast.LENGTH_LONG).show();
             /* Build a GoogleApiClient with access to the Google Sign-In API and the
              options specified by gso.*/
         mGoogleApiClient = new GoogleApiClient.Builder(boundActivity)
-                .enableAutoManage((FragmentActivity) boundActivity , new GoogleApiClient.OnConnectionFailedListener() {
+                .enableAutoManage((FragmentActivity) boundActivity, new GoogleApiClient.OnConnectionFailedListener() {
                     @Override
                     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-                        Toast.makeText(boundActivity, "Connection failed, retry", Toast.LENGTH_LONG);
+                        Toast.makeText(boundActivity, "Connection failed, retry", Toast.LENGTH_LONG).show();
                     }
                 } /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+        Toast.makeText(boundActivity,"Init done",Toast.LENGTH_LONG).show();
     }
 
     public void googleSignIn() {
@@ -105,10 +106,10 @@ public class Authenticator {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
-                    Toast.makeText(boundActivity,"onAuthStateChanged:signed_in:" + user.getUid(),Toast.LENGTH_LONG);
+                    Toast.makeText(boundActivity, "onAuthStateChanged:signed_in:" + user.getUid(), Toast.LENGTH_LONG).show();
                 } else {
                     // User is signed out
-                    Toast.makeText(boundActivity,"onAuthStateChanged:signed_out:" + user.getUid(),Toast.LENGTH_LONG);
+                    Toast.makeText(boundActivity, "onAuthStateChanged:signed_out:", Toast.LENGTH_LONG).show();
                 }
                 // ...
             }

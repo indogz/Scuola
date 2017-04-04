@@ -90,9 +90,10 @@ public class SignInActivity extends FragmentActivity implements Linkable,Logo.On
             }
         });
 
-        ActivityContents.signInButton.setOnClickListener(new View.OnClickListener() {
+        ActivityContents.googleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                authenticator.googleAuthInit();
                 authenticator.googleSignIn();
             }
         });
@@ -109,7 +110,9 @@ public class SignInActivity extends FragmentActivity implements Linkable,Logo.On
         if (requestCode == authenticator.RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             authenticator.handleSignInResult(result);
+            Toast.makeText(this,"Signed in",Toast.LENGTH_LONG).show();
         }
+        Toast.makeText(this,"Not signed in",Toast.LENGTH_LONG).show();
     }
 
 
