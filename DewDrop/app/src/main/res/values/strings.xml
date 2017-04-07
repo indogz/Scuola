@@ -3,8 +3,8 @@
     <string name="user">Username:</string>
     <string name="passw">Password:</string>
     <string name="signin">Sign In</string>
-    <string name="signup">Sign Up</string>
-    <string name="forgotten">Have you forgotten your password?</string>
+    <string name="signup"><u>Sign Up</u></string>
+    <string name="forgotten"><u>Have you forgotten your password?</u></string>
     <string name="googleLabel"> Or use your Google Account</string>
 
     <string name="name"> Name: </string>
@@ -15,6 +15,12 @@
     <string name="imageChoose"> Choose</string>
     <string name="okButton">Ok</string>
     <string name="cancelButton"> Cancel</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 
 
 </resources>

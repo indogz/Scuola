@@ -3,23 +3,30 @@ package com.example.volcano.dewdrop.auth;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.volcano.dewdrop.R;
 import com.example.volcano.dewdrop.SignInActivity;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
+
+import java.io.Serializable;
 
 import static android.content.ContentValues.TAG;
 
@@ -38,8 +45,30 @@ public class Authenticator {
 
     public Authenticator(FragmentActivity boundActivity) {
         this.boundActivity = boundActivity;
+        addFirebaseListener();
     }
 
+
+    public void createNewUser(String email,String password) {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(boundActivity, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Log.d("Exception",task.getException().getMessage());
+                            Toast.makeText(boundActivity,"Error",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        // ...
+                    }
+                });
+    }
 
     public void signIn(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
@@ -52,8 +81,12 @@ public class Authenticator {
                          the auth state listener will be notified and logic to handle the
                          signed in user can be handled in the listener.*/
                         if (!task.isSuccessful()) {
-                            Toast.makeText(boundActivity, "OK",
+                            Toast.makeText(boundActivity, "Cannot sign in. Check your network.",
                                     Toast.LENGTH_SHORT).show();
+                        } else {
+                            if (boundActivity instanceof SignInActivity) {
+                                ((SignInActivity) boundActivity).nextActivity();
+                            }
                         }
 
                     }
@@ -64,14 +97,15 @@ public class Authenticator {
             /* Configure sign-in to request the user's ID, email address, and basic
              profile. ID and basic profile are included in DEFAULT_SIGN_IN.*/
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(boundActivity.getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
-Toast.makeText(boundActivity.getApplicationContext(),"GSO",Toast.LENGTH_LONG).show();
+        Toast.makeText(boundActivity.getApplicationContext(), "GSO", Toast.LENGTH_LONG).show();
             /* Build a GoogleApiClient with access to the Google Sign-In API and the
              options specified by gso.*/
         mGoogleApiClient = new GoogleApiClient.Builder(boundActivity)
-                .enableAutoManage((FragmentActivity) boundActivity, new GoogleApiClient.OnConnectionFailedListener() {
+                .enableAutoManage(boundActivity, new GoogleApiClient.OnConnectionFailedListener() {
                     @Override
                     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
                         Toast.makeText(boundActivity, "Connection failed, retry", Toast.LENGTH_LONG).show();
@@ -79,7 +113,8 @@ Toast.makeText(boundActivity.getApplicationContext(),"GSO",Toast.LENGTH_LONG).sh
                 } /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-        Toast.makeText(boundActivity,"Init done",Toast.LENGTH_LONG).show();
+        Log.d("INIT","Init done");
+        Toast.makeText(boundActivity, "Init done", Toast.LENGTH_LONG).show();
     }
 
     public void googleSignIn() {
@@ -92,11 +127,35 @@ Toast.makeText(boundActivity.getApplicationContext(),"GSO",Toast.LENGTH_LONG).sh
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-
+            firebaseAuthWithGoogle(acct);
         } else {
 
         }
     }
+
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(boundActivity, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "signInWithCredential", task.getException());
+                            Toast.makeText(boundActivity, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                        // ...
+                    }
+                });
+    }
+
 
     public void addFirebaseListener() {
         mAuth = FirebaseAuth.getInstance();
@@ -105,10 +164,10 @@ Toast.makeText(boundActivity.getApplicationContext(),"GSO",Toast.LENGTH_LONG).sh
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    // User is signed in
+                    // com.example.volcano.dewdrop.auth.User is signed in
                     Toast.makeText(boundActivity, "onAuthStateChanged:signed_in:" + user.getUid(), Toast.LENGTH_LONG).show();
                 } else {
-                    // User is signed out
+                    // com.example.volcano.dewdrop.auth.User is signed out
                     Toast.makeText(boundActivity, "onAuthStateChanged:signed_out:", Toast.LENGTH_LONG).show();
                 }
                 // ...

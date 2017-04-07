@@ -1,42 +1,30 @@
 package com.example.volcano.dewdrop;
 
-import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.volcano.dewdrop.auth.Authenticator;
+import com.example.volcano.dewdrop.auth.User;
 import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Estensione FragmentActivity per abilitare automanage
  **/
-public class SignInActivity extends FragmentActivity implements Linkable,Logo.OnFragmentInteractionListener {
+public class SignInActivity extends FragmentActivity implements Linkable, Logo.OnFragmentInteractionListener {
 
+
+    private final int SIGN_UP = 2;
 
     @Override
     public void onFragmentInteraction(Uri uri) {
@@ -63,14 +51,23 @@ public class SignInActivity extends FragmentActivity implements Linkable,Logo.On
         ActivityContents.forgottenLabel = (TextView) findViewById(R.id.forgottenLabel);
     }
 
+    public void nextActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        Bundle extras=new Bundle();
+        extras.putString("NAME",authenticator.getmAuth().getCurrentUser().getDisplayName());
+        extras.putString("EMAIL",authenticator.getmAuth().getCurrentUser().getEmail());
+        extras.putString("PHOTO",authenticator.getmAuth().getCurrentUser().getPhotoUrl().toString());
+        intent.putExtras(extras);
+        startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
         linkViews();
         addLogo();
-        authenticator=new Authenticator(this);
-        authenticator.addFirebaseListener();
+        authenticator = new Authenticator(this);
         attachListeners();
     }
 
@@ -82,11 +79,12 @@ public class SignInActivity extends FragmentActivity implements Linkable,Logo.On
 
     }
 
+
     private void attachListeners() {
         ActivityContents.signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               authenticator.signIn(ActivityContents.usernameBox.getText().toString(), ActivityContents.passwordBox.getText().toString());
+                authenticator.signIn(ActivityContents.usernameBox.getText().toString(), ActivityContents.passwordBox.getText().toString());
             }
         });
 
@@ -97,9 +95,14 @@ public class SignInActivity extends FragmentActivity implements Linkable,Logo.On
                 authenticator.googleSignIn();
             }
         });
+        ActivityContents.signUpLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);
+                startActivityForResult(intent, SIGN_UP);
+            }
+        });
     }
-
-
 
 
     @Override
@@ -110,13 +113,18 @@ public class SignInActivity extends FragmentActivity implements Linkable,Logo.On
         if (requestCode == authenticator.RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             authenticator.handleSignInResult(result);
-            Toast.makeText(this,"Signed in",Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Signed in", Toast.LENGTH_LONG).show();
+            nextActivity();
+        } else if (requestCode == SIGN_UP) {
+            if (resultCode == RESULT_OK) {
+                Bundle extras = data.getExtras();
+                String email = extras.getString("Email");
+                String password = extras.getString("Password");
+                Authenticator authenticator = new Authenticator(this);
+                authenticator.createNewUser(email, password);
+            }
         }
-        Toast.makeText(this,"Not signed in",Toast.LENGTH_LONG).show();
     }
-
-
-
 
 
     @Override
@@ -128,7 +136,7 @@ public class SignInActivity extends FragmentActivity implements Linkable,Logo.On
     @Override
     public void onStop() {
         super.onStop();
-        if (authenticator.getmAuthListener()!= null) {
+        if (authenticator.getmAuthListener() != null) {
             authenticator.getmAuth().removeAuthStateListener(authenticator.getmAuthListener());
         }
     }

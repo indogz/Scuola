@@ -66,17 +66,19 @@
         android:id="@+id/signupLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/forgottenLabel"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="14dp"
         android:layout_weight="1"
+        android:background="@android:color/background_light"
         android:text="@string/signup"
+        android:textColor="@android:color/holo_blue_dark"
         app:layout_constraintBottom_toTopOf="@+id/forgottenLabel"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         tools:layout_constraintBottom_creator="1"
         tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1"
-        android:layout_marginBottom="14dp"
-        android:layout_above="@+id/forgottenLabel"
-        android:layout_centerHorizontal="true" />
+        tools:layout_constraintRight_creator="1" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/googleAuth"
@@ -90,17 +92,18 @@
         android:id="@+id/forgottenLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/passwordBox"
+        android:layout_marginBottom="12dp"
         android:layout_weight="1"
         android:text="@string/forgotten"
+        android:textColor="@android:color/holo_blue_dark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         tools:layout_constraintBottom_creator="1"
         tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1"
-        android:layout_marginBottom="12dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/passwordBox" />
+        tools:layout_constraintRight_creator="1" />
 
     <TextView
         android:id="@+id/userLabel"
