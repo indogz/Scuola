@@ -58,6 +58,7 @@ public class SignInActivity extends FragmentActivity implements Linkable, Logo.O
         extras.putString("EMAIL",authenticator.getmAuth().getCurrentUser().getEmail());
         extras.putString("PHOTO",authenticator.getmAuth().getCurrentUser().getPhotoUrl().toString());
         intent.putExtras(extras);
+        System.out.println(extras);
         startActivity(intent);
     }
 
