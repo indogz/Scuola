@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -18,6 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.data.DataBufferObserver;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -27,6 +29,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.io.Serializable;
+import java.util.Observer;
 
 import static android.content.ContentValues.TAG;
 
@@ -49,7 +52,7 @@ public class Authenticator {
     }
 
 
-    public void createNewUser(String email,String password) {
+    public void createNewUser(String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(boundActivity, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -60,8 +63,8 @@ public class Authenticator {
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
-                            Log.d("Exception",task.getException().getMessage());
-                            Toast.makeText(boundActivity,"Error",
+                            Log.d("Exception", task.getException().getMessage());
+                            Toast.makeText(boundActivity, "Error",
                                     Toast.LENGTH_SHORT).show();
                         }
 
@@ -71,6 +74,7 @@ public class Authenticator {
     }
 
     public void signIn(String email, String password) {
+
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(boundActivity, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -93,6 +97,7 @@ public class Authenticator {
                 });
     }
 
+
     public void googleAuthInit() {
             /* Configure sign-in to request the user's ID, email address, and basic
              profile. ID and basic profile are included in DEFAULT_SIGN_IN.*/
@@ -113,7 +118,7 @@ public class Authenticator {
                 } /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-        Log.d("INIT","Init done");
+        Log.d("INIT", "Init done");
         Toast.makeText(boundActivity, "Init done", Toast.LENGTH_LONG).show();
     }
 
@@ -164,7 +169,7 @@ public class Authenticator {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    // com.example.volcano.dewdrop.auth.User is signed in
+                    notifyCaller(user.getUid());
                     Toast.makeText(boundActivity, "onAuthStateChanged:signed_in:" + user.getUid(), Toast.LENGTH_LONG).show();
                 } else {
                     // com.example.volcano.dewdrop.auth.User is signed out
@@ -173,6 +178,11 @@ public class Authenticator {
                 // ...
             }
         };
+    }
+
+    public void notifyCaller(Object message) {
+        if (boundActivity instanceof SignInActivity)
+            ((SignInActivity) boundActivity).setMessage(message);
     }
 
     public FirebaseAuth getmAuth() {

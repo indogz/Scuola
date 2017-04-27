@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.volcano.dewdrop.auth.Authenticator;
 import com.example.volcano.dewdrop.auth.User;
+import com.example.volcano.dewdrop.utils.DatabaseOpenHelper;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.SignInButton;
@@ -25,6 +26,7 @@ public class SignInActivity extends FragmentActivity implements Linkable, Logo.O
 
 
     private final int SIGN_UP = 2;
+    private String lastNotice=null;
 
     @Override
     public void onFragmentInteraction(Uri uri) {
@@ -53,10 +55,10 @@ public class SignInActivity extends FragmentActivity implements Linkable, Logo.O
 
     public void nextActivity() {
         Intent intent = new Intent(this, MainActivity.class);
-        Bundle extras=new Bundle();
-        extras.putString("NAME",authenticator.getmAuth().getCurrentUser().getDisplayName());
-        extras.putString("EMAIL",authenticator.getmAuth().getCurrentUser().getEmail());
-        extras.putString("PHOTO",authenticator.getmAuth().getCurrentUser().getPhotoUrl().toString());
+        Bundle extras = new Bundle();
+        extras.putString("NAME", authenticator.getmAuth().getCurrentUser().getDisplayName());
+        extras.putString("EMAIL", authenticator.getmAuth().getCurrentUser().getEmail());
+        extras.putString("PHOTO", authenticator.getmAuth().getCurrentUser().getPhotoUrl().toString());
         intent.putExtras(extras);
         System.out.println(extras);
         startActivity(intent);
@@ -121,8 +123,15 @@ public class SignInActivity extends FragmentActivity implements Linkable, Logo.O
                 Bundle extras = data.getExtras();
                 String email = extras.getString("Email");
                 String password = extras.getString("Password");
+                String name = extras.getString("Name");
+                String surname = extras.getString("Surname");
+                String birthDate = extras.getString("Birthdate");
+                Uri image = extras.getParcelable("Image");
                 Authenticator authenticator = new Authenticator(this);
                 authenticator.createNewUser(email, password);
+                User newUser = new User(lastNotice,name, surname, birthDate, email, image);
+                DatabaseOpenHelper databaseOpenHelper = DatabaseOpenHelper.getInstance();
+                databaseOpenHelper.writeUser(newUser);
             }
         }
     }
@@ -142,5 +151,10 @@ public class SignInActivity extends FragmentActivity implements Linkable, Logo.O
         }
     }
 
+    public void setMessage(Object message) {
+        if (message instanceof String) {
+            lastNotice = (String) message;
+        }
+    }
 
 }

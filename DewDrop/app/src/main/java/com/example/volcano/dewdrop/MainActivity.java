@@ -1,5 +1,6 @@
 package com.example.volcano.dewdrop;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,14 +17,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.volcano.dewdrop.R;
 import com.example.volcano.dewdrop.auth.Authenticator;
 import com.example.volcano.dewdrop.auth.User;
+import com.example.volcano.dewdrop.utils.CustomAdapter;
 import com.example.volcano.dewdrop.utils.DownloadImageTask;
+import com.example.volcano.dewdrop.utils.VideoChoice;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -66,7 +71,27 @@ public class MainActivity extends AppCompatActivity
 
         setUserData();
 
+        setAdapter();
 
+
+
+    }
+
+    private void setAdapter(){
+        System.out.println(findViewById(R.id.mainContent));
+        System.out.println(findViewById(R.id.mainContent).findViewById(R.id.mainScreen));
+        System.out.println(findViewById(R.id.mainContent).findViewById(R.id.mainScreen));
+        ListView listView= (ListView) findViewById(R.id.mainContent).findViewById(R.id.mainScreen).findViewById(R.id.mainLayout).findViewById(R.id.listView);
+
+        ArrayList <VideoChoice> list=new ArrayList<>();
+        ImageView i=new ImageView(this);
+        i.setImageResource(R.mipmap.drop);
+        for (int j=0;j<10;j++) {
+            list.add(VideoChoice.getInstance(i, "Mipmap", "MIPMAP", 30));
+        }
+        CustomAdapter adapter=new CustomAdapter(this,R.layout.fragment_video_choice,list);
+
+        listView.setAdapter(adapter);
     }
 
     private void setUserData() {
@@ -130,7 +155,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            // Handle the camera action
+
+            //set listview here with movies
+            //set onclick action for each movie and start it
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {

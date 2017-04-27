@@ -15,11 +15,13 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.volcano.dewdrop.auth.Authenticator;
+import com.example.volcano.dewdrop.utils.DatabaseOpenHelper;
 
 public class SignUpActivity extends FragmentActivity implements Linkable {
 
 
     private int PHOTO = 1;
+
 
     static class ActivityContents {
         static EditText nameEdit;
@@ -27,9 +29,8 @@ public class SignUpActivity extends FragmentActivity implements Linkable {
         static EditText editBirth;
         static EditText editEmail;
         static EditText passwordEdit;
-        static ImageView imageView;
+        static Uri imageView;
         static Button chooseButton;
-        static Spinner languages;
         static Button okButton;
         static Button cancelButton;
 
@@ -61,9 +62,7 @@ public class SignUpActivity extends FragmentActivity implements Linkable {
         ActivityContents.editBirth = (EditText) findViewById(R.id.editBirth);
         ActivityContents.editEmail = (EditText) findViewById(R.id.editEmail);
         ActivityContents.passwordEdit = (EditText) findViewById(R.id.passwordEdit);
-        ActivityContents.imageView = (ImageView) findViewById(R.id.imageView);
         ActivityContents.chooseButton = (Button) findViewById(R.id.chooseButton);
-        ActivityContents.languages = (Spinner) findViewById(R.id.spinner);
         ActivityContents.okButton = (Button) findViewById(R.id.okButton);
         ActivityContents.cancelButton = (Button) findViewById(R.id.cancelButton);
     }
@@ -103,6 +102,11 @@ public class SignUpActivity extends FragmentActivity implements Linkable {
                         Bundle extras = new Bundle();
                         extras.putString("Email", ActivityContents.editEmail.getText().toString());
                         extras.putString("Password", ActivityContents.passwordEdit.getText().toString());
+                        extras.putString("Name",ActivityContents.nameEdit.getText().toString());
+                        extras.putString("Surname",ActivityContents.surnameEdit.getText().toString());
+                        extras.putString("Birthdate",ActivityContents.editBirth.getText().toString());
+                        extras.putParcelable("Image",ActivityContents.imageView);
+
                         intent.putExtras(extras);
                         SignUpActivity.this.setResult(RESULT_OK, intent);
                         SignUpActivity.this.finish();
@@ -130,7 +134,8 @@ public class SignUpActivity extends FragmentActivity implements Linkable {
         if (requestCode == PHOTO) {
             if (resultCode == RESULT_OK) {
                 Uri selectedImage = imageReturnedIntent.getData();
-                ActivityContents.imageView.setImageURI(selectedImage);
+                ActivityContents.imageView=selectedImage;
+                ((ImageView)findViewById(R.id.imageView)).setImageURI(selectedImage);
             }
 
         }
