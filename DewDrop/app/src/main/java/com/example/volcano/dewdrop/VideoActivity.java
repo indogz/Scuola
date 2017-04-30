@@ -6,8 +6,10 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 /**
@@ -28,6 +30,7 @@ public class VideoActivity extends Activity implements SurfaceHolder.Callback, M
         vidHolder = vidSurface.getHolder();
         vidHolder.addCallback(this);
         vidAddress=getIntent().getStringExtra("VIDEO");
+
     }
 
     @Override
@@ -39,11 +42,13 @@ public class VideoActivity extends Activity implements SurfaceHolder.Callback, M
     public void surfaceCreated(SurfaceHolder holder) {
         try {
             mediaPlayer = new MediaPlayer();
+            System.out.println(vidAddress);
             mediaPlayer.setDisplay(vidHolder);
-            mediaPlayer.setDataSource(vidAddress);
-            mediaPlayer.prepare();
             mediaPlayer.setOnPreparedListener(this);
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setDataSource(this,Uri.parse(vidAddress));
+            mediaPlayer.prepareAsync();
+            Toast.makeText(this,"Prepared",Toast.LENGTH_SHORT).show();
         }
         catch(Exception e){
             e.printStackTrace();

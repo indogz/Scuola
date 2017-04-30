@@ -1,10 +1,15 @@
 package com.example.volcano.dewdrop.utils;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.example.volcano.dewdrop.MainActivity;
+import com.example.volcano.dewdrop.VideoActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -52,30 +57,21 @@ public class StorageHelper {
      * @param video
      * @return
      */
-    public Uri fetchVideoUri(String video) {
+    public void fetchVideoUri(final Context caller, final String video) {
         mStorageRef = mStorageRef.getRoot().child("/video/" + video + ".mp4");
-        ExecutorService executorService = Executors.newCachedThreadPool();
-        try {
-            executorService.awaitTermination(40, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            Log.v("VERBOSE", "Interrupted execution");
+        if(caller instanceof MainActivity){
+            mStorageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Intent i = new Intent(caller, VideoActivity.class);
+                    i.putExtra("VIDEO",uri.toString());
+                    caller.startActivity(i);
+                }
+            });
+        }else{
+            throw new RuntimeException("Caller Activity must be .MainActivity");
         }
-        executorService.submit(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                mStorageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        pointingUri = uri;
-                    }
-                });
-                return pointingUri;
-            }
-        });
 
-
-
-        return pointingUri;
     }
 
 

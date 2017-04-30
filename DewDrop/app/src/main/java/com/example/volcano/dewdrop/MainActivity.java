@@ -110,10 +110,7 @@ public class MainActivity extends AppCompatActivity
               VideoChoice videoChoice= (VideoChoice) parent.getAdapter().getItem(position);
                String title= videoChoice.getTitle();
                 StorageHelper storageHelper = StorageHelper.getInstance();
-                Uri video = storageHelper.fetchVideoUri(title);
-                Intent i = new Intent(MainActivity.this, VideoActivity.class);
-                i.putExtra("VIDEO", video.toString());
-                startActivity(i);
+               storageHelper.fetchVideoUri(MainActivity.this,title);
             }
         });
 
