@@ -1,6 +1,10 @@
 package com.example.volcano.dewdrop.utils;
 
+import android.content.Intent;
+import android.view.View;
 import android.widget.ImageView;
+
+import com.example.volcano.dewdrop.VideoActivity;
 
 /**
  * Created by volcano on 27/04/17.
@@ -60,4 +64,5 @@ public class VideoChoice {
     public void setDuration(long duration) {
         this.duration = duration;
     }
+
 }

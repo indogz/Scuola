@@ -1,6 +1,7 @@
 package com.example.volcano.dewdrop.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.provider.MediaStore;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.volcano.dewdrop.R;
+import com.example.volcano.dewdrop.VideoActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,11 +44,10 @@ public class CustomAdapter extends ArrayAdapter<VideoChoice> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
         VideoChoice videoChoice = choices.get(position);
-
         ViewHolder viewHolder;
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.fragment_video_choice, parent);
+            convertView = inflater.inflate(R.layout.fragment_video_choice, null);
             viewHolder = new ViewHolder();
             viewHolder.imageView = (ImageView) convertView.findViewById(R.id.videoImage);
             viewHolder.title = (TextView) convertView.findViewById(R.id.videoTitle);
@@ -62,4 +63,5 @@ public class CustomAdapter extends ArrayAdapter<VideoChoice> {
 
         return convertView;
     }
+
 }

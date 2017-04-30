@@ -116,7 +116,6 @@ public class SignInActivity extends FragmentActivity implements Linkable, Logo.O
         if (requestCode == authenticator.RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             authenticator.handleSignInResult(result);
-            Toast.makeText(this, "Signed in", Toast.LENGTH_LONG).show();
             nextActivity();
         } else if (requestCode == SIGN_UP) {
             if (resultCode == RESULT_OK) {

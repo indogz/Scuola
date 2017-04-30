@@ -120,7 +120,6 @@ public class SignUpActivity extends FragmentActivity implements Linkable {
         ActivityContents.chooseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(SignUpActivity.this, "Choose", Toast.LENGTH_LONG).show();
                 Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(pickPhoto, PHOTO);

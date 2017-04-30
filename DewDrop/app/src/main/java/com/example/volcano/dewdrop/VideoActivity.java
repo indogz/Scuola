@@ -18,7 +18,7 @@ public class VideoActivity extends Activity implements SurfaceHolder.Callback, M
     private MediaPlayer mediaPlayer;
     private SurfaceHolder vidHolder;
     private SurfaceView vidSurface;
-    String vidAddress = "http://192.168.0.103/video/A%20Song%20of%20Simplicity%20-%20Elijah%20Bossenbroek%20(1).mp4";
+    String vidAddress=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +27,7 @@ public class VideoActivity extends Activity implements SurfaceHolder.Callback, M
         vidSurface = (SurfaceView) findViewById(R.id.surfView);
         vidHolder = vidSurface.getHolder();
         vidHolder.addCallback(this);
+        vidAddress=getIntent().getStringExtra("VIDEO");
     }
 
     @Override

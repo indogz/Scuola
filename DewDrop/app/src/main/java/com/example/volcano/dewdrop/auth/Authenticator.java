@@ -64,9 +64,7 @@ public class Authenticator {
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
                             Log.d("Exception", task.getException().getMessage());
-                            Toast.makeText(boundActivity, "Error",
-                                    Toast.LENGTH_SHORT).show();
-                        }
+                                                   }
 
                         // ...
                     }
@@ -79,9 +77,7 @@ public class Authenticator {
                 .addOnCompleteListener(boundActivity, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Toast.makeText(boundActivity, "onAuthStateChanged:onComplete", Toast.LENGTH_LONG).show();
-
-                        /*If sign in fails, display a message to the user. If sign in succeeds
+                                                /*If sign in fails, display a message to the user. If sign in succeeds
                          the auth state listener will be notified and logic to handle the
                          signed in user can be handled in the listener.*/
                         if (!task.isSuccessful()) {
@@ -106,7 +102,6 @@ public class Authenticator {
                 .requestEmail()
                 .build();
 
-        Toast.makeText(boundActivity.getApplicationContext(), "GSO", Toast.LENGTH_LONG).show();
             /* Build a GoogleApiClient with access to the Google Sign-In API and the
              options specified by gso.*/
         mGoogleApiClient = new GoogleApiClient.Builder(boundActivity)
@@ -119,7 +114,6 @@ public class Authenticator {
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
         Log.d("INIT", "Init done");
-        Toast.makeText(boundActivity, "Init done", Toast.LENGTH_LONG).show();
     }
 
     public void googleSignIn() {
@@ -170,7 +164,6 @@ public class Authenticator {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     notifyCaller(user.getUid());
-                    Toast.makeText(boundActivity, "onAuthStateChanged:signed_in:" + user.getUid(), Toast.LENGTH_LONG).show();
                 } else {
                     // com.example.volcano.dewdrop.auth.User is signed out
                     Toast.makeText(boundActivity, "onAuthStateChanged:signed_out:", Toast.LENGTH_LONG).show();

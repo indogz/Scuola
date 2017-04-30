@@ -1,8 +1,10 @@
 package com.example.volcano.dewdrop;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
@@ -16,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,7 +28,9 @@ import com.example.volcano.dewdrop.auth.Authenticator;
 import com.example.volcano.dewdrop.auth.User;
 import com.example.volcano.dewdrop.utils.CustomAdapter;
 import com.example.volcano.dewdrop.utils.DownloadImageTask;
+import com.example.volcano.dewdrop.utils.StorageHelper;
 import com.example.volcano.dewdrop.utils.VideoChoice;
+import com.example.volcano.dewdrop.utils.VideoChoiceFragment;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,6 +39,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private User user;
+    private Uri uri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,24 +80,44 @@ public class MainActivity extends AppCompatActivity
         setAdapter();
 
 
-
     }
 
-    private void setAdapter(){
-        System.out.println(findViewById(R.id.mainContent));
-        System.out.println(findViewById(R.id.mainContent).findViewById(R.id.mainScreen));
-        System.out.println(findViewById(R.id.mainContent).findViewById(R.id.mainScreen));
-        ListView listView= (ListView) findViewById(R.id.mainContent).findViewById(R.id.mainScreen).findViewById(R.id.mainLayout).findViewById(R.id.listView);
 
-        ArrayList <VideoChoice> list=new ArrayList<>();
-        ImageView i=new ImageView(this);
+    public Uri getUri() {
+        return uri;
+    }
+
+    public void setUri(Uri uri) {
+        this.uri = uri;
+    }
+
+    private void setAdapter() {
+
+        ListView listView = (ListView) findViewById(R.id.mainContent).findViewById(R.id.mainScreen).findViewById(R.id.listView);
+
+        ArrayList<VideoChoice> list = new ArrayList<>();
+        ImageView i = new ImageView(this);
         i.setImageResource(R.mipmap.drop);
-        for (int j=0;j<10;j++) {
-            list.add(VideoChoice.getInstance(i, "Mipmap", "MIPMAP", 30));
+        for (int j = 0; j < 1; j++) {
+            list.add(VideoChoice.getInstance(i, "video", "video", 30));
         }
-        CustomAdapter adapter=new CustomAdapter(this,R.layout.fragment_video_choice,list);
+        CustomAdapter adapter = new CustomAdapter(this, R.layout.fragment_video_choice, list);
 
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+              VideoChoice videoChoice= (VideoChoice) parent.getAdapter().getItem(position);
+               String title= videoChoice.getTitle();
+                StorageHelper storageHelper = StorageHelper.getInstance();
+                Uri video = storageHelper.fetchVideoUri(title);
+                Intent i = new Intent(MainActivity.this, VideoActivity.class);
+                i.putExtra("VIDEO", video.toString());
+                startActivity(i);
+            }
+        });
+
+
     }
 
     private void setUserData() {
