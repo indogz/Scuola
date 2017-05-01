@@ -1,22 +1,17 @@
 package com.example.volcano.dewdrop.utils;
 
-import android.content.Intent;
-import android.view.View;
 import android.widget.ImageView;
-
-import com.example.volcano.dewdrop.VideoActivity;
 
 /**
  * Created by volcano on 27/04/17.
  */
 
 public class VideoChoice {
+    public static VideoChoice instance = null;
     private ImageView miniature;
     private String title;
     private String subtitle;
     private long duration;
-
-    public static VideoChoice instance=null;
 
     public VideoChoice(){}
     private VideoChoice(ImageView miniature, String title, String subtitle, long duration) {

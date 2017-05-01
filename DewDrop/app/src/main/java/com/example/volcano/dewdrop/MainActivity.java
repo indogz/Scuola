@@ -1,43 +1,38 @@
 package com.example.volcano.dewdrop;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.CardView;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.volcano.dewdrop.R;
-import com.example.volcano.dewdrop.auth.Authenticator;
 import com.example.volcano.dewdrop.auth.User;
 import com.example.volcano.dewdrop.utils.CustomAdapter;
 import com.example.volcano.dewdrop.utils.DownloadImageTask;
 import com.example.volcano.dewdrop.utils.StorageHelper;
 import com.example.volcano.dewdrop.utils.VideoChoice;
-import com.example.volcano.dewdrop.utils.VideoChoiceFragment;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final int ACTIVITY_CHOOSE_FILE = 0;
     private User user;
     private Uri uri;
 
@@ -79,9 +74,43 @@ public class MainActivity extends AppCompatActivity
 
         setAdapter();
 
+        setFloatingButtonListener();
+
 
     }
 
+
+    public void setFloatingButtonListener() {
+        FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent chooseFile;
+                Intent intent;
+                chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+                chooseFile.addCategory(Intent.CATEGORY_OPENABLE);
+                chooseFile.setType("file/*");
+                intent = Intent.createChooser(chooseFile, "Choose a .mp4 file");
+                startActivityForResult(intent, ACTIVITY_CHOOSE_FILE);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            String path = "";
+            if (requestCode == ACTIVITY_CHOOSE_FILE) {
+                Uri uri = data.getData();
+                if (uri.toString().contains(".mp4")) {
+                    //upload
+                } else {
+                    Toast.makeText(this, "Only .mp4 files can be uploaded", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
 
     public Uri getUri() {
         return uri;
