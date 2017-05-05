@@ -2,10 +2,13 @@ package com.example.volcano.dewdrop;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,23 +18,25 @@ import android.widget.Toast;
 import com.example.volcano.dewdrop.auth.Authenticator;
 import com.example.volcano.dewdrop.auth.User;
 import com.example.volcano.dewdrop.utils.DatabaseOpenHelper;
+import com.example.volcano.dewdrop.utils.StorageHelper;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.Task;
+
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Estensione FragmentActivity per abilitare automanage
  **/
-public class SignInActivity extends FragmentActivity implements Linkable, Logo.OnFragmentInteractionListener {
+public class SignInActivity extends FragmentActivity implements Linkable {
 
 
     private final int SIGN_UP = 2;
-    private String lastNotice=null;
+    private String lastNotice = null;
+    private CountDownLatch latch = new CountDownLatch(1);
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
 
     static class ActivityContents {
         static EditText usernameBox;
@@ -58,7 +63,8 @@ public class SignInActivity extends FragmentActivity implements Linkable, Logo.O
         Bundle extras = new Bundle();
         extras.putString("NAME", authenticator.getmAuth().getCurrentUser().getDisplayName());
         extras.putString("EMAIL", authenticator.getmAuth().getCurrentUser().getEmail());
-        extras.putString("PHOTO", authenticator.getmAuth().getCurrentUser().getPhotoUrl().toString());
+        String photoUrl = authenticator.getmAuth().getCurrentUser().getPhotoUrl().toString();
+        extras.putString("PHOTO", photoUrl);
         intent.putExtras(extras);
         System.out.println(extras);
         startActivity(intent);
@@ -75,11 +81,12 @@ public class SignInActivity extends FragmentActivity implements Linkable, Logo.O
     }
 
     private void addLogo() {
+        Logo logo = new Logo();
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.fragment_container, Logo.newInstance("a", "b"));
-        ft.commit();
 
+        ft.replace(R.id.fragment_container, logo);
+        System.out.println(ft.commit());
     }
 
 
@@ -122,15 +129,11 @@ public class SignInActivity extends FragmentActivity implements Linkable, Logo.O
                 Bundle extras = data.getExtras();
                 String email = extras.getString("Email");
                 String password = extras.getString("Password");
-                String name = extras.getString("Name");
-                String surname = extras.getString("Surname");
-                String birthDate = extras.getString("Birthdate");
-                Uri image = extras.getParcelable("Image");
+
                 Authenticator authenticator = new Authenticator(this);
-                authenticator.createNewUser(email, password);
-                User newUser = new User(lastNotice,name, surname, birthDate, email, image);
-                DatabaseOpenHelper databaseOpenHelper = DatabaseOpenHelper.getInstance();
-                databaseOpenHelper.writeUser(newUser);
+
+                authenticator.createNewUser(email, password, extras);
+
             }
         }
     }

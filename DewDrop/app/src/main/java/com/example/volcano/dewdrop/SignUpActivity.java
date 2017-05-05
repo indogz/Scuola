@@ -3,6 +3,7 @@ package com.example.volcano.dewdrop;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +17,12 @@ import android.widget.Toast;
 
 import com.example.volcano.dewdrop.auth.Authenticator;
 import com.example.volcano.dewdrop.utils.DatabaseOpenHelper;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 
 public class SignUpActivity extends FragmentActivity implements Linkable {
 
@@ -33,6 +40,7 @@ public class SignUpActivity extends FragmentActivity implements Linkable {
         static Button chooseButton;
         static Button okButton;
         static Button cancelButton;
+        static File imageResource;
 
         static boolean isFilled() {
             /*return nameEdit.getText().toString().trim() != null &&
@@ -75,7 +83,7 @@ public class SignUpActivity extends FragmentActivity implements Linkable {
             Toast.makeText(this, "Your password must have at least 8 characters", Toast.LENGTH_LONG).show();
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(ActivityContents.editEmail.getText().toString()).matches()) {
-            check=false;
+            check = false;
             ActivityContents.editEmail.setBackgroundColor(getColor(R.color.backgroundError));
             Toast.makeText(this, "Insert a correct email", Toast.LENGTH_LONG).show();
         }
@@ -102,10 +110,10 @@ public class SignUpActivity extends FragmentActivity implements Linkable {
                         Bundle extras = new Bundle();
                         extras.putString("Email", ActivityContents.editEmail.getText().toString());
                         extras.putString("Password", ActivityContents.passwordEdit.getText().toString());
-                        extras.putString("Name",ActivityContents.nameEdit.getText().toString());
-                        extras.putString("Surname",ActivityContents.surnameEdit.getText().toString());
-                        extras.putString("Birthdate",ActivityContents.editBirth.getText().toString());
-                        extras.putParcelable("Image",ActivityContents.imageView);
+                        extras.putString("Name", ActivityContents.nameEdit.getText().toString());
+                        extras.putString("Surname", ActivityContents.surnameEdit.getText().toString());
+                        extras.putString("Birthdate", ActivityContents.editBirth.getText().toString());
+                        extras.putParcelable("Image", Uri.parse(ActivityContents.imageResource.toString()));
 
                         intent.putExtras(extras);
                         SignUpActivity.this.setResult(RESULT_OK, intent);
@@ -120,21 +128,40 @@ public class SignUpActivity extends FragmentActivity implements Linkable {
         ActivityContents.chooseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent pickPhoto = new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(pickPhoto, PHOTO);
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                startActivityForResult(intent, PHOTO);
 
             }
         });
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
-        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PHOTO) {
             if (resultCode == RESULT_OK) {
-                Uri selectedImage = imageReturnedIntent.getData();
-                ActivityContents.imageView=selectedImage;
-                ((ImageView)findViewById(R.id.imageView)).setImageURI(selectedImage);
+                if (data != null) {
+                    try {
+                        File outputDir = this.getCacheDir();
+                        File tempFile = File.createTempFile("ChosenImage", ".png", outputDir);
+                        InputStream inputStream = this.getContentResolver().openInputStream(data.getData());
+                        FileOutputStream outputStream = new FileOutputStream(tempFile);
+
+                        byte[] buffer = new byte[1024];
+                        int len;
+                        while ((len = inputStream.read(buffer)) != -1) {
+                            outputStream.write(buffer, 0, len);
+                        }
+
+                        ActivityContents.imageResource=tempFile;
+
+                    } catch (java.io.IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Uri selectedImage = data.getData();
+                ActivityContents.imageView = selectedImage;
+                ((ImageView) findViewById(R.id.imageView)).setImageURI(selectedImage);
             }
 
         }

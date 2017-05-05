@@ -8,12 +8,20 @@
 
     <FrameLayout
         android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
+        android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_alignParentTop="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal" >
+
+        <fragment
+            android:id="@+id/fragment"
+            android:name="com.example.volcano.dewdrop.Logo"
+            class="com.example.volcano.dewdrop.Logo"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            tools:layout="@layout/fragment_logo" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/passwordLabel"
