@@ -1,7 +1,6 @@
 package com.example.volcano.dewdrop;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -12,12 +11,14 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.MediaController;
-import android.widget.Toast;
+
+import com.example.volcano.dewdrop.utils.ProgressDialogFragment;
 
 /**
  * Convertire questa classe in fragment e creare una gemella per la musica
  */
-public class VideoActivity extends Activity implements SurfaceHolder.Callback, MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl, MediaPlayer.OnBufferingUpdateListener {
+public class VideoActivity extends Activity implements SurfaceHolder.Callback, MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl {
+    private static ProgressDialogFragment progressDialogFragment = new ProgressDialogFragment();
     String vidAddress = null;
     private MediaPlayer mediaPlayer;
     private SurfaceHolder vidHolder;
@@ -25,18 +26,19 @@ public class VideoActivity extends Activity implements SurfaceHolder.Callback, M
     private MediaController controller;
     private Handler handler = new Handler();
     private float x1, x2;
-
+    private int restoredPosition;
+    private int currentPosition;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
+
         vidSurface = (SurfaceView) findViewById(R.id.surfView);
         vidSurface.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Toast.makeText(VideoActivity.this, "" + isPlaying(), Toast.LENGTH_SHORT).show();
                 if (controller.isShowing() && isPlaying()) {
                     pause();
                 } else {
@@ -46,6 +48,7 @@ public class VideoActivity extends Activity implements SurfaceHolder.Callback, M
                 return VideoActivity.super.onTouchEvent(event);
             }
         });
+        System.out.println("RESTORED:" + restoredPosition);
         vidHolder = vidSurface.getHolder();
         vidHolder.addCallback(this);
         vidAddress = getIntent().getStringExtra("VIDEO");
@@ -59,7 +62,6 @@ public class VideoActivity extends Activity implements SurfaceHolder.Callback, M
         finish();
     }
 
-
     @Override
     public void onPrepared(MediaPlayer mp) {
         controller.setMediaPlayer(this);
@@ -71,12 +73,41 @@ public class VideoActivity extends Activity implements SurfaceHolder.Callback, M
                 controller.show();
             }
         });
+        if (restoredPosition == -1) {
+            progressDialogFragment.dismiss();
+        } else {
+            mediaPlayer.seekTo(restoredPosition);
+        }
         mediaPlayer.start();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        System.out.println("----------------------ONRESTOREINSTANCESTATE---------------------------------");
+        super.onRestoreInstanceState(savedInstanceState);
+        restoredPosition = savedInstanceState.getInt("RESTORE");
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        System.out.println("----------------------ONSAVEINSTANCESTATE---------------------------------");
+        outState.putInt("RESTORE", currentPosition);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onPause() {
+        pause();
+        currentPosition = getCurrentPosition();
+        super.onPause();
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         try {
+            if (restoredPosition == -1) {
+                progressDialogFragment.show(getFragmentManager(), "TAG");
+            }
             mediaPlayer = new MediaPlayer();
             System.out.println(vidAddress);
             mediaPlayer.setDisplay(vidHolder);
@@ -147,11 +178,6 @@ public class VideoActivity extends Activity implements SurfaceHolder.Callback, M
     @Override
     public int getAudioSessionId() {
         return 0;
-    }
-
-    @Override
-    public void onBufferingUpdate(MediaPlayer mp, int percent) {
-        ProgressDialog.show(this, "Loading", percent + "%");
     }
 
     @Override
