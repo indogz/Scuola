@@ -73,7 +73,7 @@ public class VideoActivity extends Activity implements SurfaceHolder.Callback, M
                 controller.show();
             }
         });
-        if (restoredPosition == -1) {
+        if (restoredPosition == 0) {
             progressDialogFragment.dismiss();
         } else {
             mediaPlayer.seekTo(restoredPosition);
@@ -97,7 +97,7 @@ public class VideoActivity extends Activity implements SurfaceHolder.Callback, M
 
     @Override
     protected void onPause() {
-        pause();
+        //pause();
         currentPosition = getCurrentPosition();
         super.onPause();
     }
@@ -105,7 +105,7 @@ public class VideoActivity extends Activity implements SurfaceHolder.Callback, M
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         try {
-            if (restoredPosition == -1) {
+            if (restoredPosition == 0) {
                 progressDialogFragment.show(getFragmentManager(), "TAG");
             }
             mediaPlayer = new MediaPlayer();

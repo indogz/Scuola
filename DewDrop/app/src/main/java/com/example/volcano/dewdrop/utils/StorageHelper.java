@@ -1,38 +1,25 @@
 package com.example.volcano.dewdrop.utils;
 
-import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.example.volcano.dewdrop.MainActivity;
-import com.example.volcano.dewdrop.R;
 import com.example.volcano.dewdrop.VideoActivity;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.database.Transaction;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.io.InputStream;
 
 /**
  * Created by volcano on 12/04/17.
@@ -40,10 +27,8 @@ import java.util.concurrent.TimeUnit;
 
 public class StorageHelper {
 
-    private StorageReference mStorageRef;
-
     private static StorageHelper storageHelper = null;
-
+    private StorageReference mStorageRef;
     private Uri pointingUri;
 
     private StorageHelper() {
@@ -81,11 +66,28 @@ public class StorageHelper {
 
     }
 
+    @SuppressWarnings("VisibleForTests")
+    public void uploadVideo(InputStream file, final DialogFragment loadingMask) {
+        StorageReference reference = mStorageRef.child("video");
+        System.out.println(reference);
+        StorageMetadata.Builder builder = new StorageMetadata.Builder();
+        builder.setContentType("video/mp4");
+        reference.putStream(file, builder.build()).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                loadingMask.dismiss();
+            }
+        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                System.out.println(taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount() + "%");
+            }
+        });
+    }
 
-    public void uploadFile(File file, String uid) {
+    public void uploadImage(File file, String uid) {
         StorageReference reference = mStorageRef.child("/images/" + uid);
         reference.putFile(Uri.fromFile(file));
-
     }
 
     public Uri getPointingUri() {

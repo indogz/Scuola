@@ -24,9 +24,12 @@ import android.widget.Toast;
 import com.example.volcano.dewdrop.auth.User;
 import com.example.volcano.dewdrop.utils.CustomAdapter;
 import com.example.volcano.dewdrop.utils.DownloadImageTask;
+import com.example.volcano.dewdrop.utils.ProgressDialogFragment;
 import com.example.volcano.dewdrop.utils.StorageHelper;
 import com.example.volcano.dewdrop.utils.VideoChoice;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
@@ -85,13 +88,19 @@ public class MainActivity extends AppCompatActivity
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent chooseFile;
-                Intent intent;
-                chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
-                chooseFile.addCategory(Intent.CATEGORY_OPENABLE);
-                chooseFile.setType("file/*");
-                intent = Intent.createChooser(chooseFile, "Choose a .mp4 file");
-                startActivityForResult(intent, ACTIVITY_CHOOSE_FILE);
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("video/*");
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+                try {
+                    startActivityForResult(
+                            Intent.createChooser(intent, "Select a Video to Upload"),
+                            ACTIVITY_CHOOSE_FILE);
+                } catch (android.content.ActivityNotFoundException ex) {
+                    // Potentially direct the user to the Market with a Dialog
+                    Toast.makeText(MainActivity.this, "Please install a File Manager.",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -100,14 +109,19 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            String path = "";
             if (requestCode == ACTIVITY_CHOOSE_FILE) {
                 Uri uri = data.getData();
-                if (uri.toString().contains(".mp4")) {
-                    //upload
-                } else {
-                    Toast.makeText(this, "Only .mp4 files can be uploaded", Toast.LENGTH_LONG).show();
+                InputStream in = null;
+                try {
+                    in = getContentResolver().openInputStream(uri);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
                 }
+
+                ProgressDialogFragment progressDialogFragment = new ProgressDialogFragment();
+                progressDialogFragment.show(getFragmentManager(), "TAG");
+                StorageHelper.getInstance().uploadVideo(in, progressDialogFragment);
+
             }
         }
     }
@@ -136,10 +150,10 @@ public class MainActivity extends AppCompatActivity
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-              VideoChoice videoChoice= (VideoChoice) parent.getAdapter().getItem(position);
-               String title= videoChoice.getTitle();
+                VideoChoice videoChoice = (VideoChoice) parent.getAdapter().getItem(position);
+                String title = videoChoice.getTitle();
                 StorageHelper storageHelper = StorageHelper.getInstance();
-               storageHelper.fetchVideoUri(MainActivity.this,title);
+                storageHelper.fetchVideoUri(MainActivity.this, title);
             }
         });
 

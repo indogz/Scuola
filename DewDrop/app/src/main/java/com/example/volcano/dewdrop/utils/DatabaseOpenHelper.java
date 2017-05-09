@@ -2,7 +2,6 @@ package com.example.volcano.dewdrop.utils;
 
 import android.util.Log;
 
-import com.example.volcano.dewdrop.auth.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseException;
@@ -11,9 +10,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -22,22 +19,16 @@ import java.util.List;
 
 public class DatabaseOpenHelper {
 
+    private static DatabaseOpenHelper instance = null;
+    private static List<String> mainFields = new ArrayList<>();
     private FirebaseDatabase database;
     private DatabaseReference reference;
     private StorageHelper storageHelper;
-    private static DatabaseOpenHelper instance = null;
     private DatabaseReference root;
-    private static List<String> mainFields = new ArrayList<>();
 
     private DatabaseOpenHelper() {
         database = FirebaseDatabase.getInstance();
     }
-
-    private void initDefaultMainFields() {
-        mainFields.add("Users");
-        mainFields.add("Videos");
-    }
-
 
     public static DatabaseOpenHelper getInstance() {
         if (instance == null) {
@@ -45,6 +36,11 @@ public class DatabaseOpenHelper {
             instance.onCreate(mainFields);
         }
         return instance;
+    }
+
+    private void initDefaultMainFields() {
+        mainFields.add("Users");
+        mainFields.add("Videos");
     }
 
     private void onCreate(List<String> mainFields) {
@@ -97,7 +93,7 @@ public class DatabaseOpenHelper {
             if (child.hasBlobs()) {
                 File blobs[] = child.getBlobs();
                 for (File f : blobs) {
-                    storageHelper.uploadFile(f, child.getPrimaryKey());
+                    storageHelper.uploadImage(f, child.getPrimaryKey());
                 }
             }
             temp.updateChildren(child.toMap());
@@ -127,7 +123,7 @@ public class DatabaseOpenHelper {
 
         users = users.child(user.UID).push();
         users.updateChildren(user.toMap());
-        StorageHelper.getInstance().uploadFile(new File(user.PHOTO_URL.toString()), user.UID);
+        StorageHelper.getInstance().uploadImage(new File(user.PHOTO_URL.toString()), user.UID);
         //ADD PHOTO TO STORAGE.
 
     }*/

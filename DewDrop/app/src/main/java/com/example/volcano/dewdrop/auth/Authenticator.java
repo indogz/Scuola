@@ -1,18 +1,11 @@
 package com.example.volcano.dewdrop.auth;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Parcelable;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.volcano.dewdrop.MainActivity;
@@ -26,9 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.data.DataBufferObserver;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -41,16 +32,10 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.Serializable;
 import java.util.Iterator;
-import java.util.Objects;
-import java.util.Observer;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static android.content.ContentValues.TAG;
 
@@ -60,12 +45,12 @@ import static android.content.ContentValues.TAG;
 
 public class Authenticator {
 
+    public final int RC_SIGN_IN = 1;
     private FragmentActivity boundActivity;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private GoogleApiClient mGoogleApiClient;
     private GoogleSignInOptions gso;
-    public final int RC_SIGN_IN = 1;
     private String uid;
     private CountDownLatch latch;
 
@@ -127,7 +112,6 @@ public class Authenticator {
                             if (boundActivity instanceof SignInActivity) {
                                 Continuation continuation = new Continuation() {
                                     User user = new User();
-
                                     @Override
                                     public Object then(@NonNull final Task task) throws Exception {
                                         final DatabaseReference databaseReference = DatabaseOpenHelper.getInstance().select("Users", getmAuth().getCurrentUser().getUid());
@@ -151,7 +135,7 @@ public class Authenticator {
                                                             user.setPHOTO_URL(((Uri) task.getResult()));
                                                             extras.putString("NAME", user.getNAME() + " " + user.getSURNAME());
                                                             extras.putString("EMAIL", getmAuth().getCurrentUser().getEmail());
-                                                            extras.putString("PHOTO", ((Uri) task.getResult()).toString());
+                                                            extras.putString("PHOTO", task.getResult().toString());
                                                             intent.putExtras(extras);
                                                             System.out.println(extras);
                                                             progressDialogFragment.dismiss();
