@@ -25,6 +25,7 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         this.imageView = imageView;
     }
 
+
     /*
         doInBackground(Params... params)
             Override this method to perform a computation on a background thread.

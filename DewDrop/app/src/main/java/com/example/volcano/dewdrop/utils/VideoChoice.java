@@ -7,7 +7,6 @@ import android.widget.ImageView;
  */
 
 public class VideoChoice {
-    public static VideoChoice instance = null;
     private ImageView miniature;
     private String title;
     private String subtitle;
@@ -22,11 +21,9 @@ public class VideoChoice {
         this.duration = duration;
     }
 
+
     public static VideoChoice getInstance(ImageView miniature, String title, String subtitle, long duration){
-        if(instance==null){
-            instance=new VideoChoice(miniature,title,subtitle,duration);
-        }
-        return instance;
+        return new VideoChoice(miniature, title, subtitle, duration);
     }
 
     public ImageView getMiniature() {
@@ -61,4 +58,12 @@ public class VideoChoice {
         this.duration = duration;
     }
 
+    @Override
+    public String toString() {
+        return "VideoChoice{" +
+                "title='" + title + '\'' +
+                ", subtitle='" + subtitle + '\'' +
+                ", duration=" + duration +
+                '}';
+    }
 }

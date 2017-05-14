@@ -5,12 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.example.volcano.dewdrop.MainActivity;
 import com.example.volcano.dewdrop.VideoActivity;
 import com.example.volcano.dewdrop.auth.Video;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
@@ -71,6 +73,12 @@ public class StorageHelper implements Observer {
 
     }
 
+    StorageReference getVideoKeyUri(String key) {
+        return mStorageRef.child("/Videos/").child(key);
+    }
+
+
+
     @SuppressWarnings("VisibleForTests")
     public void uploadVideo(final Video video, final DialogFragment loadingMask) {
         StorageReference reference = mStorageRef.child("/video/" + video.getTitle());
@@ -96,7 +104,7 @@ public class StorageHelper implements Observer {
         reference.putFile(Uri.fromFile(file));
     }
 
-    public void uploadImage(InputStream inputStream, String uid) {
+    public void uploadImageForVideo(InputStream inputStream, String uid) {
         StorageReference reference = mStorageRef.child("/images/" + uid);
         reference.putStream(inputStream);
     }
@@ -111,9 +119,10 @@ public class StorageHelper implements Observer {
     }
 
     public Uri getImageUrl(String uid, Continuation continuation) {
-        System.out.println(mStorageRef.child("/images/" + uid));
+        StorageReference reference = mStorageRef.child("/images/" + uid);
 
-        mStorageRef.child("/images/" + uid).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        System.out.println(reference);
+        reference.child("/images/" + uid).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 setPointingUri(uri);
@@ -121,6 +130,12 @@ public class StorageHelper implements Observer {
             }
 
 
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                setPointingUri(null);
+                Log.d("SEARCH", "SEARCHING....");
+            }
         })
                 .continueWith(continuation);
         return getPointingUri();

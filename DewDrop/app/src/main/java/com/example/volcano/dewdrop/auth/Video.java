@@ -38,6 +38,7 @@ public class Video implements DatabaseValue, Parcelable {
     private String description;
     private Uri videoUri;
     private InputStream inputStream;
+    private InputStream imageInputstream;
     private Activity context;
 
     public Video(Activity context, String title, Uri miniature, String description, Uri videoUri) {
@@ -55,9 +56,12 @@ public class Video implements DatabaseValue, Parcelable {
 
         try {
             inputStream = context.getContentResolver().openInputStream(videoUri);
+            imageInputstream = context.getContentResolver().openInputStream(videoUri);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
+
     }
 
     public Video(Parcel in) {
@@ -69,6 +73,7 @@ public class Video implements DatabaseValue, Parcelable {
         videoUri = (Uri) map.get("Videouri");
         inputStream = (InputStream) map.get("InputStream");
         context = (Activity) map.get("Context");
+        imageInputstream = (InputStream) map.get("Imageinputstream");
     }
 
     public Activity getContext() {
@@ -122,6 +127,10 @@ public class Video implements DatabaseValue, Parcelable {
         result = 31 * result + (int) (getDuration() ^ (getDuration() >>> 32));
         result = 31 * result + getVideoUri().hashCode();
         return result;
+    }
+
+    public InputStream getImageInputstream() {
+        return imageInputstream;
     }
 
     public String getTitle() {
@@ -179,6 +188,7 @@ public class Video implements DatabaseValue, Parcelable {
         hashMap.put("Videouri", videoUri);
         hashMap.put("InputStream", inputStream);
         hashMap.put("Context", context);
+        hashMap.put("Imageinputstream", imageInputstream);
         dest.writeMap(hashMap);
 
     }

@@ -1,11 +1,16 @@
 package com.example.volcano.dewdrop.utils;
 
 import android.app.Activity;
-import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.ImageView;
 
+import com.example.volcano.dewdrop.auth.Video;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseException;
@@ -14,7 +19,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -90,29 +94,46 @@ public class DatabaseOpenHelper {
 
     public void fetchAllVideos(final Activity target, final ProgressDialogFragment progressDialogFragment, final AsyncTask continuation, final ArrayList<VideoChoice> videoChoices) {
         final DatabaseReference reference = root.child("Videos");
-        AsyncTask task = new AsyncTask() {
+        final ImageView dump = new ImageView(target);
+
+        final AsyncTask asyncTask = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
-                reference.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Iterator<DataSnapshot> it = dataSnapshot.getChildren().iterator();
-                        while (it.hasNext()) {
-                            Iterator<DataSnapshot> ds = it.next().getChildren().iterator();
-                            while (ds.hasNext()) {
-                                HashMap<String, Object> hashMap = (HashMap<String, Object>) ds.next().getValue();
-                                VideoChoice videoChoice = VideoChoice.getInstance(null, (String) hashMap.get("Title"), (String) hashMap.get("Description"), (long) hashMap.get("Duration"));
+                Iterator<DataSnapshot> it = ((DataSnapshot) params[0]).getChildren().iterator();
+                while (it.hasNext()) {
+                    DataSnapshot currentSnapshot = it.next();
+                    Iterator<DataSnapshot> ds = currentSnapshot.getChildren().iterator();
+                    while (ds.hasNext()) {
+                        DataSnapshot leafSnapshot = ds.next();
+                        final HashMap<String, Object> hashMap = (HashMap<String, Object>) leafSnapshot.getValue();
+
+                        DownloadImageTask downloadImageTask = new DownloadImageTask(dump);
+                        System.out.println("KEY: " + currentSnapshot.getKey());
+                        Log.d("TAG", dump.toString());
+                        Continuation c = new Continuation() {
+                            @Override
+                            public Object then(@NonNull Task task) throws Exception {
+                                VideoChoice videoChoice = VideoChoice.getInstance(dump, (String) hashMap.get("Title"), (String) hashMap.get("Description"), (long) hashMap.get("Duration"));
+                                Log.d("Videochoice", videoChoice.toString());
                                 videoChoices.add(videoChoice);
+                                Log.d("HELP", videoChoices.toString());
+                                return null;
                             }
+                        };
+                        Uri uri = null;
+                        try {
+                            uri = StorageHelper.getInstance().getImageUrl(currentSnapshot.getKey(), c);
+                        } catch (Exception e) {
+                            System.out.println(e.getLocalizedMessage());
                         }
 
-                    }
+                        if (uri != null) {
+                            downloadImageTask.execute(uri.toString());
+                        }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
 
                     }
-                });
+                }
                 return null;
             }
 
@@ -122,14 +143,27 @@ public class DatabaseOpenHelper {
                 progressDialogFragment.show(target.getFragmentManager(), "TAG");
             }
 
-
             @Override
             protected void onPostExecute(Object o) {
                 super.onPostExecute(o);
+                Log.d("Continuation", videoChoices.toString());
                 continuation.execute(progressDialogFragment);
             }
+
         };
-        task.execute();
+
+        reference.addListenerForSingleValueEvent(new ValueEventListener() { //problema  qui: non aspetta di finire sostituire con handler
+            @Override
+            public void onDataChange(final DataSnapshot dataSnapshot) {
+                asyncTask.execute(dataSnapshot);
+                Handler handler = new Handler();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
@@ -146,6 +180,7 @@ public class DatabaseOpenHelper {
                 File blobs[] = child.getImages();
                 for (File f : blobs) {
                     storageHelper.uploadImage(f, child.getPrimaryKey());
+
                 }
             }
             temp.updateChildren(child.toMap());
@@ -157,7 +192,7 @@ public class DatabaseOpenHelper {
     }
 
 
-    public boolean addChild(Context c, String mainField, DatabaseValue child) {
+    public boolean addChild(String mainField, Video child) {
         boolean condition = mainFields.contains(mainField);
         try {
             DatabaseReference temp = root.child(mainField);
@@ -167,17 +202,14 @@ public class DatabaseOpenHelper {
             //add fields
             System.out.println("############################################" + child);
             if (child.hasImages()) {
-                File blobs[] = child.getImages();
-                for (File f : blobs) {
-                    storageHelper.uploadImage(c.getContentResolver().openInputStream(Uri.fromFile(f)), child.getPrimaryKey());
-                }
+
+                storageHelper.uploadImageForVideo(child.getImageInputstream(), child.getPrimaryKey());
+
             }
             temp.updateChildren(child.toMap());
         } catch (
                 DatabaseException e) {
             System.out.println(e.getMessage());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         }
         return !condition;
     }

@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -149,6 +150,7 @@ public class MainActivity extends AppCompatActivity
                 super.onPostExecute(o);
 
                 CustomAdapter adapter = new CustomAdapter(MainActivity.this, R.layout.fragment_video_choice, videoChoices);
+                Log.d("VIDEOCHOICES", videoChoices.toString());
 
                 listView.setAdapter(adapter);
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -175,6 +177,7 @@ public class MainActivity extends AppCompatActivity
 
 
         ImageView src = new ImageView(this);
+        System.out.println("§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§" + user.PHOTO_URL);
         new DownloadImageTask(src).execute(user.PHOTO_URL.toString());
 
         cardView.addView(src);
