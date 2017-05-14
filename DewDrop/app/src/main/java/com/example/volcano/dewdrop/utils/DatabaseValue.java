@@ -1,7 +1,6 @@
 package com.example.volcano.dewdrop.utils;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -14,8 +13,8 @@ public interface DatabaseValue {
 
     String getPrimaryKey();
 
-    File[] getBlobs();
+    File[] getImages();
 
-    boolean hasBlobs();
+    boolean hasImages();
 
 }

@@ -2,6 +2,7 @@ package com.example.volcano.dewdrop;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -23,13 +24,13 @@ import android.widget.Toast;
 
 import com.example.volcano.dewdrop.auth.User;
 import com.example.volcano.dewdrop.utils.CustomAdapter;
+import com.example.volcano.dewdrop.utils.DatabaseOpenHelper;
 import com.example.volcano.dewdrop.utils.DownloadImageTask;
 import com.example.volcano.dewdrop.utils.ProgressDialogFragment;
 import com.example.volcano.dewdrop.utils.StorageHelper;
 import com.example.volcano.dewdrop.utils.VideoChoice;
+import com.example.volcano.dewdrop.utils.VideoParametersSelector;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
@@ -111,20 +112,12 @@ public class MainActivity extends AppCompatActivity
         if (resultCode == RESULT_OK) {
             if (requestCode == ACTIVITY_CHOOSE_FILE) {
                 Uri uri = data.getData();
-                InputStream in = null;
-                try {
-                    in = getContentResolver().openInputStream(uri);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-
-                ProgressDialogFragment progressDialogFragment = new ProgressDialogFragment();
-                progressDialogFragment.show(getFragmentManager(), "TAG");
-                StorageHelper.getInstance().uploadVideo(in, progressDialogFragment);
-
+                VideoParametersSelector videoParametersSelector = VideoParametersSelector.newInstance(uri);
+                videoParametersSelector.show(getFragmentManager(), "TAG");
             }
         }
     }
+
 
     public Uri getUri() {
         return uri;
@@ -136,29 +129,44 @@ public class MainActivity extends AppCompatActivity
 
     private void setAdapter() {
 
-        ListView listView = (ListView) findViewById(R.id.mainContent).findViewById(R.id.mainScreen).findViewById(R.id.listView);
+        final ListView listView = (ListView) findViewById(R.id.mainContent).findViewById(R.id.mainScreen).findViewById(R.id.listView);
 
-        ArrayList<VideoChoice> list = new ArrayList<>();
-        ImageView i = new ImageView(this);
-        i.setImageResource(R.mipmap.drop);
-        for (int j = 0; j < 1; j++) {
-            list.add(VideoChoice.getInstance(i, "video", "video", 30));
-        }
-        CustomAdapter adapter = new CustomAdapter(this, R.layout.fragment_video_choice, list);
+        ProgressDialogFragment progressDialogFragment = new ProgressDialogFragment();
+        final ArrayList<VideoChoice> videoChoices = new ArrayList<>();
 
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        AsyncTask asyncTask = new AsyncTask() {
+            ProgressDialogFragment progressDialogFragment;
+
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                VideoChoice videoChoice = (VideoChoice) parent.getAdapter().getItem(position);
-                String title = videoChoice.getTitle();
-                StorageHelper storageHelper = StorageHelper.getInstance();
-                storageHelper.fetchVideoUri(MainActivity.this, title);
+            protected Object doInBackground(Object[] params) {
+                progressDialogFragment = (ProgressDialogFragment) params[0];
+                return null;
             }
-        });
 
 
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+
+                CustomAdapter adapter = new CustomAdapter(MainActivity.this, R.layout.fragment_video_choice, videoChoices);
+
+                listView.setAdapter(adapter);
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        VideoChoice videoChoice = (VideoChoice) parent.getAdapter().getItem(position);
+                        String title = videoChoice.getTitle();
+                        StorageHelper storageHelper = StorageHelper.getInstance();
+                        storageHelper.fetchVideoUri(MainActivity.this, title);
+                    }
+                });
+                progressDialogFragment.dismiss();
+
+            }
+        };
+        DatabaseOpenHelper.getInstance().fetchAllVideos(this, progressDialogFragment, asyncTask, videoChoices);
     }
+
 
     private void setUserData() {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);

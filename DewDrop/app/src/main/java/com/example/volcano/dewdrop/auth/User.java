@@ -1,20 +1,11 @@
 package com.example.volcano.dewdrop.auth;
 
 import android.net.Uri;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.provider.Contacts;
-import android.util.Log;
-import android.widget.ImageView;
 
 import com.example.volcano.dewdrop.utils.DatabaseValue;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.io.File;
-import java.io.Serializable;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -68,6 +59,10 @@ public class User implements DatabaseValue {
         return NAME;
     }
 
+    public void setNAME(String NAME) {
+        this.NAME = NAME;
+    }
+
     public String getSURNAME() {
         return SURNAME;
     }
@@ -88,20 +83,16 @@ public class User implements DatabaseValue {
         return EMAIL;
     }
 
-    public void setNAME(String NAME) {
-        this.NAME = NAME;
-    }
-
     public void setEMAIL(String EMAIL) {
         this.EMAIL = EMAIL;
     }
 
-    public void setPHOTO_URL(Uri PHOTO_URL) {
-        this.PHOTO_URL = PHOTO_URL;
-    }
-
     public Uri getPHOTO_URL() {
         return PHOTO_URL;
+    }
+
+    public void setPHOTO_URL(Uri PHOTO_URL) {
+        this.PHOTO_URL = PHOTO_URL;
     }
 
     @Override
@@ -112,7 +103,7 @@ public class User implements DatabaseValue {
 
 
     @Override
-    public File[] getBlobs() {
+    public File[] getImages() {
         if (PHOTO_URL != null) {
             return new File[]{new File(PHOTO_URL.toString())};
         }
@@ -120,7 +111,7 @@ public class User implements DatabaseValue {
     }
 
     @Override
-    public boolean hasBlobs() {
-        return getBlobs() != null;
+    public boolean hasImages() {
+        return getImages() != null;
     }
 }

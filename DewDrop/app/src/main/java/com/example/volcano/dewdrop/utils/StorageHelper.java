@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 
 import com.example.volcano.dewdrop.MainActivity;
 import com.example.volcano.dewdrop.VideoActivity;
+import com.example.volcano.dewdrop.auth.Video;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -20,18 +21,21 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by volcano on 12/04/17.
  */
 
-public class StorageHelper {
+public class StorageHelper implements Observer {
 
     private static StorageHelper storageHelper = null;
     private StorageReference mStorageRef;
     private Uri pointingUri;
 
     private StorageHelper() {
+        super();
         mStorageRef = FirebaseStorage.getInstance().getReference();
     }
 
@@ -50,7 +54,8 @@ public class StorageHelper {
      * @return
      */
     public void fetchVideoUri(final Context caller, final String video) {
-        mStorageRef = mStorageRef.getRoot().child("/video/" + video + ".mp4");
+        System.out.println(video);
+        mStorageRef = mStorageRef.getRoot().child("/video/" + video);
         if (caller instanceof MainActivity) {
             mStorageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
@@ -67,14 +72,15 @@ public class StorageHelper {
     }
 
     @SuppressWarnings("VisibleForTests")
-    public void uploadVideo(InputStream file, final DialogFragment loadingMask) {
-        StorageReference reference = mStorageRef.child("video");
+    public void uploadVideo(final Video video, final DialogFragment loadingMask) {
+        StorageReference reference = mStorageRef.child("/video/" + video.getTitle());
         System.out.println(reference);
         StorageMetadata.Builder builder = new StorageMetadata.Builder();
         builder.setContentType("video/mp4");
-        reference.putStream(file, builder.build()).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+        reference.putStream(video.getInputStream(), builder.build()).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                DatabaseOpenHelper.getInstance().addChild("Videos", video);
                 loadingMask.dismiss();
             }
         }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
@@ -90,6 +96,12 @@ public class StorageHelper {
         reference.putFile(Uri.fromFile(file));
     }
 
+    public void uploadImage(InputStream inputStream, String uid) {
+        StorageReference reference = mStorageRef.child("/images/" + uid);
+        reference.putStream(inputStream);
+    }
+
+
     public Uri getPointingUri() {
         return pointingUri;
     }
@@ -98,7 +110,7 @@ public class StorageHelper {
         this.pointingUri = pointingUri;
     }
 
-    public Uri getImageUrl(String uid,Continuation continuation) {
+    public Uri getImageUrl(String uid, Continuation continuation) {
         System.out.println(mStorageRef.child("/images/" + uid));
 
         mStorageRef.child("/images/" + uid).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -110,7 +122,7 @@ public class StorageHelper {
 
 
         })
-        .continueWith(continuation);
+                .continueWith(continuation);
         return getPointingUri();
     }
 
@@ -119,5 +131,17 @@ public class StorageHelper {
         reference.getFile(pathToFile);
     }
 
+    @Override
+    public void update(Observable o, Object arg) {
+        if (o == null) {
+            if (arg instanceof Video) {
+                Video video = (Video) arg;
+                ProgressDialogFragment progressDialogFragment = new ProgressDialogFragment();
+                progressDialogFragment.show(video.getContext().getFragmentManager(), "TAG");
+                uploadVideo(video, progressDialogFragment);
+            }
+        }
+
+    }
 }
 

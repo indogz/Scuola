@@ -5,8 +5,6 @@ import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 
-import com.example.volcano.dewdrop.R;
-
 /**
  * Created by volcano on 04/05/17.
  */
@@ -14,6 +12,7 @@ import com.example.volcano.dewdrop.R;
 
 public class ProgressDialogFragment extends DialogFragment
 {
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {

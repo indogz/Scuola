@@ -13,6 +13,7 @@ public class VideoChoice {
     private String subtitle;
     private long duration;
 
+
     public VideoChoice(){}
     private VideoChoice(ImageView miniature, String title, String subtitle, long duration) {
         this.miniature = miniature;

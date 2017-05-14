@@ -1,5 +1,9 @@
 package com.example.volcano.dewdrop.utils;
 
+import android.app.Activity;
+import android.content.Context;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
@@ -10,7 +14,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -74,11 +81,55 @@ public class DatabaseOpenHelper {
 
 
     public DatabaseReference select(String container, String primaryKey) {
-        System.out.println(container+" "+primaryKey);
+        System.out.println(container + " " + primaryKey);
 
         DatabaseReference reference = root.child(container).child(primaryKey);
 
         return reference;
+    }
+
+    public void fetchAllVideos(final Activity target, final ProgressDialogFragment progressDialogFragment, final AsyncTask continuation, final ArrayList<VideoChoice> videoChoices) {
+        final DatabaseReference reference = root.child("Videos");
+        AsyncTask task = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] params) {
+                reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Iterator<DataSnapshot> it = dataSnapshot.getChildren().iterator();
+                        while (it.hasNext()) {
+                            Iterator<DataSnapshot> ds = it.next().getChildren().iterator();
+                            while (ds.hasNext()) {
+                                HashMap<String, Object> hashMap = (HashMap<String, Object>) ds.next().getValue();
+                                VideoChoice videoChoice = VideoChoice.getInstance(null, (String) hashMap.get("Title"), (String) hashMap.get("Description"), (long) hashMap.get("Duration"));
+                                videoChoices.add(videoChoice);
+                            }
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+                return null;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                progressDialogFragment.show(target.getFragmentManager(), "TAG");
+            }
+
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                continuation.execute(progressDialogFragment);
+            }
+        };
+        task.execute();
     }
 
 
@@ -90,8 +141,9 @@ public class DatabaseOpenHelper {
             //add primary key
             temp = temp.child(child.getPrimaryKey()).push();
             //add fields
-            if (child.hasBlobs()) {
-                File blobs[] = child.getBlobs();
+            System.out.println("############################################" + child);
+            if (child.hasImages()) {
+                File blobs[] = child.getImages();
                 for (File f : blobs) {
                     storageHelper.uploadImage(f, child.getPrimaryKey());
                 }
@@ -100,6 +152,32 @@ public class DatabaseOpenHelper {
         } catch (
                 DatabaseException e) {
             System.out.println(e.getMessage());
+        }
+        return !condition;
+    }
+
+
+    public boolean addChild(Context c, String mainField, DatabaseValue child) {
+        boolean condition = mainFields.contains(mainField);
+        try {
+            DatabaseReference temp = root.child(mainField);
+            System.out.println(temp);
+            //add primary key
+            temp = temp.child(child.getPrimaryKey()).push();
+            //add fields
+            System.out.println("############################################" + child);
+            if (child.hasImages()) {
+                File blobs[] = child.getImages();
+                for (File f : blobs) {
+                    storageHelper.uploadImage(c.getContentResolver().openInputStream(Uri.fromFile(f)), child.getPrimaryKey());
+                }
+            }
+            temp.updateChildren(child.toMap());
+        } catch (
+                DatabaseException e) {
+            System.out.println(e.getMessage());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
         return !condition;
     }
