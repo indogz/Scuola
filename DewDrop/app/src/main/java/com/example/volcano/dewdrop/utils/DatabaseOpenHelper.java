@@ -3,7 +3,6 @@ package com.example.volcano.dewdrop.utils;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ImageView;
@@ -23,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by volcano on 10/04/17.
@@ -96,46 +96,56 @@ public class DatabaseOpenHelper {
         final DatabaseReference reference = root.child("Videos");
         final ImageView dump = new ImageView(target);
 
+        final DownloadImageTask downloadImageTask = new DownloadImageTask(dump);
+
+
         final AsyncTask asyncTask = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
                 Iterator<DataSnapshot> it = ((DataSnapshot) params[0]).getChildren().iterator();
                 while (it.hasNext()) {
-                    DataSnapshot currentSnapshot = it.next();
+                    final DataSnapshot currentSnapshot = it.next();
                     Iterator<DataSnapshot> ds = currentSnapshot.getChildren().iterator();
                     while (ds.hasNext()) {
                         DataSnapshot leafSnapshot = ds.next();
                         final HashMap<String, Object> hashMap = (HashMap<String, Object>) leafSnapshot.getValue();
 
-                        DownloadImageTask downloadImageTask = new DownloadImageTask(dump);
                         System.out.println("KEY: " + currentSnapshot.getKey());
                         Log.d("TAG", dump.toString());
-                        Continuation c = new Continuation() {
+                        final Continuation setImageTask = new Continuation() {
                             @Override
                             public Object then(@NonNull Task task) throws Exception {
+                                Uri uri = (Uri) task.getResult();
+                                Log.d("URI", uri == null ? "null" : uri.toString());
                                 VideoChoice videoChoice = VideoChoice.getInstance(dump, (String) hashMap.get("Title"), (String) hashMap.get("Description"), (long) hashMap.get("Duration"));
                                 Log.d("Videochoice", videoChoice.toString());
                                 videoChoices.add(videoChoice);
                                 Log.d("HELP", videoChoices.toString());
+                                if (uri != null) {
+                                    try {
+                                        downloadImageTask.execute(uri.toString()).get();
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    } catch (ExecutionException e) {
+                                        e.printStackTrace();
+                                    }
+                                    Log.d("Continuation", videoChoices.toString());
+                                    continuation.execute(progressDialogFragment);
+
+                                }
                                 return null;
                             }
                         };
-                        Uri uri = null;
-                        try {
-                            uri = StorageHelper.getInstance().getImageUrl(currentSnapshot.getKey(), c);
-                        } catch (Exception e) {
-                            System.out.println(e.getLocalizedMessage());
-                        }
-
-                        if (uri != null) {
-                            downloadImageTask.execute(uri.toString());
-                        }
+                        StorageHelper.getInstance().getImageUrl(currentSnapshot.getKey(), setImageTask);
 
 
                     }
+
+
                 }
                 return null;
             }
+
 
             @Override
             protected void onPreExecute() {
@@ -146,17 +156,17 @@ public class DatabaseOpenHelper {
             @Override
             protected void onPostExecute(Object o) {
                 super.onPostExecute(o);
-                Log.d("Continuation", videoChoices.toString());
-                continuation.execute(progressDialogFragment);
+
+
             }
 
         };
 
-        reference.addListenerForSingleValueEvent(new ValueEventListener() { //problema  qui: non aspetta di finire sostituire con handler
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(final DataSnapshot dataSnapshot) {
                 asyncTask.execute(dataSnapshot);
-                Handler handler = new Handler();
+                Log.v("EXECUTE", "XDXDXDXD");
             }
 
             @Override

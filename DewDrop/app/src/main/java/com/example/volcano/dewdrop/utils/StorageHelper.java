@@ -121,11 +121,12 @@ public class StorageHelper implements Observer {
     public Uri getImageUrl(String uid, Continuation continuation) {
         StorageReference reference = mStorageRef.child("/images/" + uid);
 
-        System.out.println(reference);
-        reference.child("/images/" + uid).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        Log.d("Reference", reference.toString());
+        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 setPointingUri(uri);
+
 
             }
 

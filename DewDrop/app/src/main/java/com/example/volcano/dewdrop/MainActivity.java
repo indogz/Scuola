@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-
     public void setFloatingButtonListener() {
         FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -132,15 +131,14 @@ public class MainActivity extends AppCompatActivity
 
         final ListView listView = (ListView) findViewById(R.id.mainContent).findViewById(R.id.mainScreen).findViewById(R.id.listView);
 
-        ProgressDialogFragment progressDialogFragment = new ProgressDialogFragment();
+        final ProgressDialogFragment progressDialogFragment = new ProgressDialogFragment();
         final ArrayList<VideoChoice> videoChoices = new ArrayList<>();
 
-        AsyncTask asyncTask = new AsyncTask() {
-            ProgressDialogFragment progressDialogFragment;
+        AsyncTask continuation = new AsyncTask() {
+
 
             @Override
             protected Object doInBackground(Object[] params) {
-                progressDialogFragment = (ProgressDialogFragment) params[0];
                 return null;
             }
 
@@ -166,9 +164,8 @@ public class MainActivity extends AppCompatActivity
 
             }
         };
-        DatabaseOpenHelper.getInstance().fetchAllVideos(this, progressDialogFragment, asyncTask, videoChoices);
+        DatabaseOpenHelper.getInstance().fetchAllVideos(this, progressDialogFragment, continuation, videoChoices);
     }
-
 
     private void setUserData() {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);

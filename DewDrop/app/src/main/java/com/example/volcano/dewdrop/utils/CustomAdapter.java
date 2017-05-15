@@ -1,8 +1,6 @@
 package com.example.volcano.dewdrop.utils;
 
 import android.content.Context;
-import android.content.Intent;
-import android.provider.MediaStore;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,15 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.volcano.dewdrop.R;
-import com.example.volcano.dewdrop.VideoActivity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by volcano on 27/04/17.
@@ -27,12 +22,6 @@ import java.util.List;
 public class CustomAdapter extends ArrayAdapter<VideoChoice> {
 
     private ArrayList<VideoChoice> choices;
-
-    private static class ViewHolder {
-        private ImageView imageView;
-        private TextView title;
-        private TextView subtitle;
-    }
 
     public CustomAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull ArrayList<VideoChoice> objects) {
         super(context, resource, objects);
@@ -57,11 +46,17 @@ public class CustomAdapter extends ArrayAdapter<VideoChoice> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.imageView=videoChoice.getMiniature();
+        viewHolder.imageView.setImageDrawable(videoChoice.getMiniature().getDrawable());
         viewHolder.title.setText(videoChoice.getTitle());
         viewHolder.subtitle.setText(videoChoice.getSubtitle());
 
         return convertView;
+    }
+
+    private static class ViewHolder {
+        private ImageView imageView;
+        private TextView title;
+        private TextView subtitle;
     }
 
 }

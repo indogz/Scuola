@@ -6,6 +6,7 @@
     tools:context="com.example.volcano.dewdrop.utils.VideoChoiceFragment">
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/cardview_default_radius">
@@ -24,7 +25,8 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintLeft_toRightOf="@+id/videoImage"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/videoTitle" />
+            app:layout_constraintTop_toBottomOf="@+id/videoTitle"
+            app:layout_constraintVertical_bias="1.0" />
 
         <TextView
             android:id="@+id/videoTitle"
@@ -39,12 +41,15 @@
 
         <ImageView
             android:id="@+id/videoImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="80dp"
+            android:layout_height="44dp"
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="14dp"
+            android:adjustViewBounds="true"
+            android:cropToPadding="true"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.311"
             app:layout_constraintLeft_toLeftOf="parent"

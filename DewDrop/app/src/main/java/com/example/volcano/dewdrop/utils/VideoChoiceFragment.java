@@ -1,22 +1,16 @@
 package com.example.volcano.dewdrop.utils;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.volcano.dewdrop.R;
-import com.example.volcano.dewdrop.VideoActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,7 +20,7 @@ import com.example.volcano.dewdrop.VideoActivity;
  * Use the {@link VideoChoiceFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class VideoChoiceFragment extends Fragment  {
+public class VideoChoiceFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -38,13 +32,6 @@ public class VideoChoiceFragment extends Fragment  {
 
     private OnFragmentInteractionListener mListener;
     private ViewHolder viewHolder = null;
-
-    public static class ViewHolder {
-        public TextView title;
-        TextView subtitle;
-        ImageView image;
-        int duration;
-    }
 
     public VideoChoiceFragment() {
         // Required empty public constructor
@@ -91,11 +78,10 @@ public class VideoChoiceFragment extends Fragment  {
             viewHolder.subtitle = (TextView) view.findViewById(R.id.videoSubtitle);
             //Not complusory
             view.setTag(viewHolder);
-           // view.setOnClickListener(new Clicker());
+
         }
         return view;
     }
-
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -134,6 +120,13 @@ public class VideoChoiceFragment extends Fragment  {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public static class ViewHolder {
+        public TextView title;
+        TextView subtitle;
+        ImageView image;
+        int duration;
     }
 
 }

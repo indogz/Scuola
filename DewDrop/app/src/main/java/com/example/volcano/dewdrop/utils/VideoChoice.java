@@ -61,7 +61,8 @@ public class VideoChoice {
     @Override
     public String toString() {
         return "VideoChoice{" +
-                "title='" + title + '\'' +
+                "miniature=" + miniature +
+                ", title='" + title + '\'' +
                 ", subtitle='" + subtitle + '\'' +
                 ", duration=" + duration +
                 '}';
